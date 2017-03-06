@@ -17,23 +17,19 @@
 import UIKit
 
 class ViewController: UIViewController, UIPopoverPresentationControllerDelegate {
-                            
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
-  }
-  
-  
+
   @IBAction func handlePopoverPressed(sender: UIView) {
-    let popoverVC = storyboard?.instantiateViewControllerWithIdentifier("codePopover") as UIViewController
+    let popoverVC = storyboard?.instantiateViewControllerWithIdentifier("codePopover") as! UIViewController
     popoverVC.modalPresentationStyle = .Popover
+    // Present it before configuring it
+    presentViewController(popoverVC, animated: true, completion: nil)
+    // Now the popoverPresentationController has been created
     if let popoverController = popoverVC.popoverPresentationController {
       popoverController.sourceView = sender
       popoverController.sourceRect = sender.bounds
       popoverController.permittedArrowDirections = .Any
       popoverController.delegate = self
     }
-    presentViewController(popoverVC, animated: true, completion: nil)
   }
   
   @IBAction func handleAlertPressed(sender: AnyObject) {
@@ -72,11 +68,11 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate 
   
   
   // MARK: - UIPopoverPresentationControllerDelegate
-  func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle {
+  func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
     return .FullScreen
   }
   
-  func presentationController(controller: UIPresentationController!, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController! {
+  func presentationController(controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
     return UINavigationController(rootViewController: controller.presentedViewController)
   }
 }

@@ -1,5 +1,8 @@
 # iOS8 Day-by-Day :: Day 21 :: Alerts and Popovers
 
+> __Apr 14 2015__ Updated to match changes in documentation of
+> `UIPopoverPresentationController`
+
 This post is part of a daily series of posts introducing the most exciting new
 parts of iOS8 for developers - [#iOS8DayByDay](https://twitter.com/search?q=%23iOS8DayByDay).
 To see the posts you've missed check out the [index page](http://shinobicontrols.com/iOS8DayByDay),
@@ -36,10 +39,14 @@ the presentation of a view controller in a popover style. You don't create one
 of these directly, but instead one is created for you by UIKit when the 
 `modalPresentationStyle` property on `UIViewController` is set to `.Popover`.
 
-    let popoverVC = storyboard?.instantiateViewControllerWithIdentifier("codePopover") as UIViewController
+    let popoverVC = storyboard?.instantiateViewControllerWithIdentifier("codePopover") as! UIViewController
     popoverVC.modalPresentationStyle = .Popover
 
-You can then get hold of the popover presentation controller from the
+Presenting the popover is as simple as calling `presentViewController()`:
+
+    presentViewController(popoverVC, animated: true, completion: nil)
+
+Once you've called `presentViewController(_:, animated:)` you can then get hold of the popover presentation controller from the
 `popoverPresentationController` property of `UIViewController`:
 
     let popoverController = popoverVC.popoverPresentationController
@@ -51,9 +58,9 @@ use to configure the popover:
     popoverController.sourceRect = sender.bounds
     popoverController.permittedArrowDirections = .Any
 
-Then, presenting the popover is as simple as calling `presentViewController()`:
-
-    presentViewController(popoverVC, animated: true, completion: nil)
+Note the workflow is slightly counter-intuitive here: you have to 'present'
+the popover view controller before configuring it. This is because the
+presentation controller isn't created until presentation.
 
 The popover presentation controller is inherently adaptive - a regular
 horizontal size class will show a traditional popover, but a compact will (by
@@ -76,7 +83,7 @@ the difference being that fullscreen will remove the presenting view controller'
 view, whereas over-fullscreen won't. You can set it with the following delegate
 method:
 
-    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle {
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
       return .FullScreen
     }
 
@@ -90,8 +97,8 @@ The other delegate method allows you to return a completely custom view
 controller for the adaptive display. For example, the following will put the
 popover view controller inside a navigation controller:
 
-    func presentationController(controller: UIPresentationController!, 
-              viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController! {
+    func presentationController(controller: UIPresentationController, 
+              viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
       return UINavigationController(rootViewController: controller.presentedViewController)
     }
 
